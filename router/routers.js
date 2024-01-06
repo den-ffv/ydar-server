@@ -4,7 +4,9 @@ import { check } from "express-validator";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 import verifyMiddleware from "../middlewares/verifyMiddleware.js";
+import PostController from "../controller/PostController.js";
 const router = new Router();
+
 
 router.post("/register", [
     check("name", "user cannot be empty").notEmpty(),
@@ -20,4 +22,11 @@ router.get("/activate/:link", UserController.activate);
 
 router.patch("/verify-user/:userId", roleMiddleware(['admin']), UserController.verifyUser);
 router.get("/users", authMiddleware, verifyMiddleware, UserController.getUsers);
-export default router
+
+router.post("/event/create", roleMiddleware(['admin']),PostController.createPost);
+router.post("/event/read",PostController.readPost);
+router.get("/event/readall",PostController.readAllPost);
+router.delete("/event/delete", roleMiddleware(['admin']),PostController.deletePost);
+router.put("/event/update", roleMiddleware(['admin']),PostController.updatePost);
+
+export default router 
