@@ -18,6 +18,9 @@ router.post("/logout", UserController.logout);
 router.get("/refresh", UserController.refresh);
 router.get("/activate/:link", UserController.activate);
 
+
 router.patch("/verify-user/:userId", roleMiddleware(['admin']), UserController.verifyUser);
-router.get("/users", authMiddleware, verifyMiddleware, UserController.getUsers);
+router.get("/users", roleMiddleware(['admin', 'manager']), UserController.getUsers);
+router.get("/user/:id", roleMiddleware(['admin', 'manager']), UserController.getUserByID);
+router.delete("/delete/:id", roleMiddleware(['admin', 'manager']), UserController.deleteUser);
 export default router

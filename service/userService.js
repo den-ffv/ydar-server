@@ -8,7 +8,7 @@ import TokenService from "../service/tokenService.js";
 
 
 class UserService {
-  async registration(name, lastname, email, password) {
+  async registration(name, lastname, email, password, res) {
     const candidate = await User.findOne({ email });
     if (candidate) {
       return res
@@ -16,7 +16,7 @@ class UserService {
         .json({ message: `The user with email ${email} already exists` });
     }
     const hashPassword = await bcrypt.hash(password, 3);
-    const userRole = await Role.findOne({ value: "admin" });
+    const userRole = await Role.findOne({ value: "user" });
     const activationLink = v4();
     const user = await User.create({
       name,
