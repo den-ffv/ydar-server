@@ -5,6 +5,8 @@ import cors from "cors";
 import "dotenv/config";
 
 import router from "./router/routers.js";
+import passport from "passport";
+import session from "express-session";
 
 const PORT = process.env.PORT || 5555;
 const app = express();
@@ -13,7 +15,20 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 
+app.use(
+  session({
+    secret: process.env.SECRET_KEY,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use("/api", router);
+app.get("/", (req, res) => {
+  return res.send("hello");
+});
 
 const start = async () => {
   try {

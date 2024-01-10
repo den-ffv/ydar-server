@@ -36,8 +36,8 @@ class UserController {
         .status(200)
         .json({ message: "The user is successfully arranged", userData });
     } catch (err) {
-      console.log(err);
-      res.status(400).json({ message: "Registration error", err });
+      console.error(err);
+      return res.status(400).json({ message: "Registration error", err });
     }
   }
 
@@ -59,8 +59,8 @@ class UserController {
       );
       return res.json({ token, user });
     } catch (err) {
-      console.log(err);
-      res.status(400).json({ message: "Login error" });
+      console.error(err);
+      return res.status(400).json({ message: "Login error" });
     }
   }
   async logout(req, res, next) {
@@ -86,19 +86,18 @@ class UserController {
   }
 
   async verifyUser(req, res) {
-    const { userId } = req.params;
-    console.log(req.user);
     try {
+      const userId = req.params.id;
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found 😩" });
       }
       user.isVerification = true;
       await user.save();
-      res.status(200).json({ message: "User verified successfully 🥳" });
+      return res.status(200).json({ message: "User verified successfully 🥳" });
     } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Internal Server Error 😩" });
+      console.error(err);
+      return res.status(500).json({ message: "Internal Server Error 😩" });
     }
   }
   async getUsers(req, res) {
@@ -109,10 +108,10 @@ class UserController {
         return res.status(400).json({ message: "Failed to get users" });
       }
 
-      return res.json(users);
+      return res.json({ users });
     } catch (err) {
       console.log(err);
-      res.status(400).json({ message: "Error when receiving users" });
+      return res.status(400).json({ message: "Error when receiving users" });
     }
   }
   async getUserByID(req, res) {
@@ -154,6 +153,31 @@ class UserController {
     } catch (err) {
       console.error(err);
       return res.status(400).json({ message: "Error when deleted user" });
+    }
+  }
+  async addAvatar(req, res) {
+    try {
+      const userId = req.params.id;
+
+      const nameOfProfilePicture = req.file.filename;
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { userPhoto: nameOfProfilePicture },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(400).json({ message: "User not found" });
+      }
+
+      res.json({
+        user: updatedUser,
+        message: "The photo is successfully installed",
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error installing photo" });
     }
   }
 }

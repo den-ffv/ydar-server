@@ -1,9 +1,9 @@
 import { Schema, model } from "mongoose";
 
 const User = new Schema({
-  userPhoto: { type: String, required: false },
+  userPhoto: { type: String, required: false, default: null },
   name: { type: String, required: true },
-  lastname: { type: String, required: true },
+  lastname: { type: String, required: false, default: null },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   role: [{ type: String, ref: "Role" }],
@@ -14,7 +14,8 @@ const User = new Schema({
   isVerification: { type: Boolean, default: false },
   isActivated: { type: Boolean, default: false },
   activationLink: { type: String, required: false },
-  telegramId: { type: String, required: false, default: Date.now  },
+  telegramId: { type: String, required: false, default: Date.now },
+  googleId: { type: String, required: false, default: Date.now },
 });
 
 export default model("User", User);
