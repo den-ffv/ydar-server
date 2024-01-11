@@ -7,7 +7,6 @@ import verifyMiddleware from "../middlewares/verifyMiddleware.js";
 import EventController from "../controller/EventController.js";
 const router = new Router();
 
-
 router.post("/register", [
     check("name", "user cannot be empty").notEmpty(),
     check("lastname", "lastname cannot be empty").notEmpty(),
