@@ -19,22 +19,22 @@ class PostController
         content: content,
         location: location,
       });
-      res.status(200).json({Event})
-    }catch (err) {
+      return res.status(200).json({Event})
+    }catch (res) {
       console.log(err);
       res.status(400).json({ message: "Create Post error", err });
       res.status(500).json({ message: "Internal server error", error: err });
     }
   }
-  async readPost(req, res, next) {
+  async readOnePost(req, res, next) {
     try {
-      const { id } = req.body;
-      const post = await EventModel.findOne({ _id: id });
+      const eventId = req.params.id ;
+      const post = await Event.findById(eventId);;
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
-      res.status(200).json(post);
-    } catch (err) {
+      return res.status(200).json(post);
+    } catch (res) {
       console.error(err);
       res.status(400).json({ message: "Error fetching posts", error: err });
       res.status(500).json({ message: "Internal server error", error: err });
@@ -45,17 +45,20 @@ class PostController
   {
     try {
       const allPosts = await EventModel.find({});
-      res.status(200).json(allPosts);
-    } catch (err) {
+      if(!allPosts) 
+      { 
+        return res.status(400).json("Error fetching posts")
+      }
+      return res.status(200).json(allPosts);
+    } catch (res) {
       console.error(err);
-      res.status(400).json({ message: "Error fetching posts", error: err });
       res.status(500).json({ message: "Internal server error", error: err });
     }
   }
   async updatePost(req, res, next) {
     try {
       const { id, imageUrl, title, content, location } = req.body;
-      const post = await EventModel.findOne({ _id: id });
+      const post = await Event.findById(id);;
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
@@ -68,8 +71,8 @@ class PostController
           location: location,
         }
       );
-      res.status(200).json({ message: "Post updated successfully" });
-    } catch (err) {
+      return res.status(200).json({ message: "Post updated successfully" });
+    } catch (res) {
       console.error(err);
       res.status(500).json({ message: "Internal server error", error: err });
     }
@@ -85,9 +88,9 @@ class PostController
         return res.status(404).json({ message: "Post not found" });
       }
   
-      res.status(200).json({ message: "Post deleted successfully 🥳" });
+      return res.status(200).json({ message: "Post deleted successfully 🥳" });
     }
-    catch(err)
+    catch(res)
     {
       console.log(err);
       res.status(400).json({ message: "Delete post error", err });
