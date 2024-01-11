@@ -29,7 +29,7 @@ class PostController
   async readOnePost(req, res, next) {
     try {
       const eventId = req.params.id ;
-      const post = await Event.findById(eventId);;
+      const post = await EventModel.findById(eventId);;
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
@@ -58,7 +58,7 @@ class PostController
   async updatePost(req, res, next) {
     try {
       const { id, imageUrl, title, content, location } = req.body;
-      const post = await Event.findById(id);;
+      const post = await EventModel.findById(id);;
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }

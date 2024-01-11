@@ -1,7 +1,7 @@
-import User from "../models/User.js";
-
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
+import User from "../models/User.js";
 import { secret } from "../config.js";
 
 import UserService from "../service/userService.js";
@@ -18,21 +18,26 @@ const generateAccessToken = (id, roles, isVerification) => {
 class UserController {
   async registration(req, res, next) {
     try {
-      // const validationError = validationResult(req);
-      // if (!validationError.isEmpty()) {
-      //   return res
-      //     .status(400)
-      //     .json({ message: "Restration error", validationError });
-      // }
       const { name, lastname, email, password } = req.body;
-      const userData = await UserService.registration(name, lastname, email, password);
+      const userData = await UserService.registration(
+        name,
+        lastname,
+        email,
+        password,
+        res
+      );
 
-      res.cookie("refreshToken", userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly : true})
+      res.cookie("refreshToken", userData.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
 
-      return res.status(200).json({ message: "The user is successfully arranged", userData })
+      return res
+        .status(200)
+        .json({ message: "The user is successfully arranged", userData });
     } catch (err) {
-      console.log(err);
-      res.status(400).json({ message: "Registration error", err });
+      console.error(err);
+      return res.status(400).json({ message: "Registration error", err });
     }
   }
 
@@ -54,8 +59,8 @@ class UserController {
       );
       return res.json({ token, user });
     } catch (err) {
-      console.log(err);
-      res.status(400).json({ message: "Login error" });
+      console.error(err);
+      return res.status(400).json({ message: "Login error" });
     }
   }
   async logout(req, res, next) {
@@ -81,28 +86,98 @@ class UserController {
   }
 
   async verifyUser(req, res) {
-    const { userId } = req.params;
-    console.log(req.user);
     try {
+      const userId = req.params.id;
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found 😩" });
       }
       user.isVerification = true;
       await user.save();
-      res.status(200).json({ message: "User verified successfully 🥳" });
+      return res.status(200).json({ message: "User verified successfully 🥳" });
     } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Internal Server Error 😩" });
+      console.error(err);
+      return res.status(500).json({ message: "Internal Server Error 😩" });
     }
   }
   async getUsers(req, res) {
     try {
       const users = await User.find();
-      return res.json(users);
+
+      if (!users) {
+        return res.status(400).json({ message: "Failed to get users" });
+      }
+
+      return res.json({ users });
     } catch (err) {
       console.log(err);
-      res.status(400).json({ message: "Failed to get users" });
+      return res.status(400).json({ message: "Error when receiving users" });
+    }
+  }
+  async getUserByID(req, res) {
+    try {
+      const userId = req.params.id;
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res
+          .status(400)
+          .json({ message: "User with such ID was not found" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "User successfully received", user });
+    } catch (err) {
+      console.error(err);
+      return res.status(400).json({ message: "Error when receiving user" });
+    }
+  }
+  async deleteUser(req, res) {
+    try {
+      const userId = req.params.id;
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res
+          .status(200)
+          .json({ message: "User with such ID was not found" });
+      }
+
+      await User.deleteOne({ _id: userId });
+      return res
+        .status(200)
+        .json({ message: "The user has been successfully deleted" });
+    } catch (err) {
+      console.error(err);
+      return res.status(400).json({ message: "Error when deleted user" });
+    }
+  }
+  async addAvatar(req, res) {
+    try {
+      const userId = req.params.id;
+
+      const nameOfProfilePicture = req.file.filename;
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { userPhoto: nameOfProfilePicture },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(400).json({ message: "User not found" });
+      }
+
+      res.json({
+        user: updatedUser,
+        message: "The photo is successfully installed",
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error installing photo" });
     }
   }
 }
