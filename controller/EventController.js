@@ -5,9 +5,9 @@ import Event from "../models/Event.js";
 //  useNewUrlParser: true,
 //  useUnifiedTopology: true,
 //});
-class PostController 
+class EventController 
 {
-  async createPost(req, res, next) {
+  async createEvent(req, res, next) {
     try {
       const { imageUrl, title, content, location } = req.body;
       const event = await Event.create({
@@ -22,22 +22,21 @@ class PostController
     }
   }
   
-  async readOnePost(req, res, next) {
+  async readOneEvent(req, res, next) {
     try {
       const eventId = req.params.id ;
       const post = await Event.findById(eventId);;
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
-      return res.status(200).json(post);
-    } catch (res) {
+      return res.status(200).json({post});
+    } catch (err) {
       console.error(err);
-      res.status(400).json({ message: "Error fetching posts", error: err });
-      res.status(500).json({ message: "Internal server error", error: err });
+      return res.status(400).json({ message: "Error fetching posts", error: err });
     }
   }
   
-  async readAllPost(req, res, next)
+  async readAllEvents(req, res, next)
   {
     try {
       const allPosts = await Event.find({});
@@ -45,13 +44,13 @@ class PostController
       { 
         return res.status(400).json("Error fetching posts")
       }
-      return res.status(200).json(allPosts);
-    } catch (res) {
+      return res.status(200).json({allPosts});
+    } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error", error: err });
+      return res.status(400).json({ message: "Error fetching posts", error: err });
     }
   }
-  async updatePost(req, res, next) {
+  async updateEvent(req, res, next) {
     try {
       const eventId = req.params.id;
       const { imageUrl, title, content, location } = req.body;
@@ -71,13 +70,13 @@ class PostController
       }
   
       return res.status(200).json({ message: "Post updated successfully", updatedPost });
-    } catch (res) {
+    } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error", error: err });
+      return res.status(500).json({ message: "Internal server error", error: err });
     }
   }
 
-  async deletePost(req, res, next) {
+  async deleteEvent(req, res, next) {
     try {
       const eventId = req.params.id;
       const result = await Event.deleteOne({ _id: eventId });
@@ -87,11 +86,11 @@ class PostController
       }
   
       return res.status(200).json({ message: "Post deleted successfully 🥳" });
-    } catch (res) {
+    } catch (err) {
       console.log(err);
-      res.status(500).json({ message: "Internal server error", error: err });
+      return res.status(500).json({ message: "Internal server error", error: err });
     }
   }
 }
 
-export default new PostController();
+export default new EventController();

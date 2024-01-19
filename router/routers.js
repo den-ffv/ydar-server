@@ -22,10 +22,10 @@ router.get("/activate/:link", UserController.activate);
 router.patch("/verify-user/:userId", roleMiddleware(['admin']), UserController.verifyUser);
 router.get("/users", authMiddleware, verifyMiddleware, UserController.getUsers);
 
-router.post("/event-create", roleMiddleware(['admin']), EventController.createPost);
-router.post("/event-readone/:id",EventController.readOnePost);
-router.get("/event-readall",EventController.readAllPost);
-router.delete("/event-delete/:id", roleMiddleware(['admin']), EventController.deletePost);
-router.put("/event-update/:id", roleMiddleware(['admin']), EventController.updatePost);
+router.post("/event-create", roleMiddleware(['admin']), EventController.createEvent);
+router.get("/event-readone/:id",EventController.readOneEvent);
+router.get("/event-readall",EventController.readAllEvents);
+router.delete("/event-delete/:id", roleMiddleware(['admin']), EventController.deleteEvent);
+router.put("/event-update/:id", roleMiddleware(['admin']), EventController.updateEvent);
 
 export default router 
