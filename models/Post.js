@@ -3,7 +3,7 @@ import { Schema, model } from "mongoose";
 
 const Post = new Schema({
   //author: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  imgeUrl: { type: String, require: true },
+  imageUrl: { type: String, require: true },
   title: { type: String, require: true },
   content: { type: String, require: true, unique: true },
   createdAt: { type: Date, default: Date.now },

@@ -1,32 +1,32 @@
-import Event from "../models/Event.js";
+import Post from "../models/Post.js";
 
 // Подключение к MongoDB
 //mongoose.connect('mongodb://localhost:27017/Test', {
 //  useNewUrlParser: true,
 //  useUnifiedTopology: true,
 //});
-class EventController 
+class postController 
 {
-  async createEvent(req, res, next) {
+  async createPost(req, res, next) {
     try {
       const { imageUrl, title, content, location } = req.body;
-      const event = await Event.create({
+      const post = await Post.create({
         imageUrl: imageUrl,
         title: title,
         content: content,
         location: location,
       });
-      return res.status(200).json({ event });
+      return res.status(200).json({ post });
     } catch (err) {
       console.error(err);
-      return res.status(400).json({ message: "Error when create event", error: err });
+      return res.status(400).json({ message: "Error when create posts", error: err });
     }
   }
   
-  async readOneEvent(req, res, next) {
+  async readOnePost(req, res, next) {
     try {
-      const eventId = req.params.id ;
-      const post = await Event.findById(eventId);;
+      const postId = req.params.id ;
+      const post = await Post.findById(postId);;
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
@@ -37,10 +37,10 @@ class EventController
     }
   }
   
-  async readAllEvents(req, res, next)
+  async readAllPost(req, res, next)
   {
     try {
-      const allPosts = await Event.find({});
+      const allPosts = await Post.find({});
       if(!allPosts) 
       { 
         return res.status(400).json("Error fetching posts")
@@ -51,12 +51,12 @@ class EventController
       return res.status(400).json({ message: "Error fetching posts", error: err });
     }
   }
-  async updateEvent(req, res, next) {
+  async updatePost(req, res, next) {
     try {
-      const eventId = req.params.id;
+      const postId = req.params.id;
       const { imageUrl, title, content, location } = req.body;
-      const updatedPost = await Event.findByIdAndUpdate(
-        eventId,
+      const updatedPost = await Post.findByIdAndUpdate(
+        postId,
         {
           imageUrl: imageUrl,
           title: title,
@@ -73,25 +73,25 @@ class EventController
       return res.status(200).json({ message: "Post updated successfully", updatedPost });
     } catch (err) {
       console.error(err);
-      return res.status(400).json({ message: "Error when update event", error: err });
+      return res.status(400).json({ message: "Error when update post", error: err });
     }
   }
 
-  async deleteEvent(req, res, next) {
+  async deletePost(req, res, next) {
     try {
-      const eventId = req.params.id;
-      const result = await Event.findById(eventId);
+      const postId = req.params.id;
+      const result = await Post.findById(postId);
   
       if (!result) {
         return res.status(404).json({ message: "Post not found" });
       }
-      await Event.deleteOne({_id:eventId})
+      await Post.deleteOne({_id:postId})
       return res.status(200).json({ message: "Post deleted successfully 🥳" });
     } catch (err) {
       console.log(err);
-      return res.status(400).json({ message: "Error when deleted event", error: err });
+      return res.status(400).json({ message: "Error when deleted post", error: err });
     }
   }
 }
 
-export default new EventController();
+export default new postController();
