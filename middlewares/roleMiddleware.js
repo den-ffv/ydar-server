@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { secret } from "../config.js";
+
 
 export default function (roles) {
   return function (req, res, next) {
@@ -13,7 +13,7 @@ export default function (roles) {
           .status(403)
           .json({ message: "The user is not authorized 😥" });
       }
-      const { roles: userRoles } = jwt.verify(token, secret);
+      const { roles: userRoles } = jwt.verify(token, process.env.SECRET_KEY);
       let hasRole = false;
       userRoles.forEach((role) => {
         if (roles.includes(role)) {

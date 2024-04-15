@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { secret } from "../config.js";
+
 
 export default (req, res, next) => {
   if (req.method === "OPTION") {
@@ -10,7 +10,7 @@ export default (req, res, next) => {
     if (!token) {
       return res.status(403).json({ message: "The user is not authorized 😥" });
     }
-    const decodedData = jwt.verify(token, secret);
+    const decodedData = jwt.verify(token, process.env.SECRET_KEY);
 
     req.user = decodedData;
     next()

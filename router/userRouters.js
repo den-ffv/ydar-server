@@ -8,10 +8,10 @@ import UserController from "../controller/UserController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 
-import {storage} from "../config/photoController.js"
+import {storage} from "../config/photoController.js";
 
 const userRoutes = Router();
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 userRoutes.post("/register", [
     check("name", "user cannot be empty").notEmpty(),
@@ -27,18 +27,18 @@ userRoutes.get("/auth/google/callback",  passport.authenticate('google', { failu
     (req, res) => {
     return res.redirect('/');
 })
-userRoutes.patch("/upload/avatar/:id", upload.single("file"),authMiddleware, UserController.addAvatar)
+userRoutes.patch("/upload/avatar/:id",authMiddleware, UserController.addAvatar)
 // app.post("/upload/avatar", upload.single("file"), (req, res) => { res.json(req.file);});
 
 // ----
 userRoutes.post("/logout", UserController.logout);
 userRoutes.get("/refresh", UserController.refresh);
+userRoutes.get("/activate/:link", UserController.activate);
 // ----
 
-userRoutes.get("/activate/:link", UserController.activate);
 userRoutes.patch("/verify/:id", roleMiddleware(['admin']), UserController.verifyUser);
 userRoutes.get("/get-all", roleMiddleware(['admin', 'manager']), UserController.getUsers);
-userRoutes.get("/:id", roleMiddleware(['admin', 'manager']), UserController.getUserByID);
+userRoutes.get("/:id", authMiddleware, UserController.getUserByID);
 userRoutes.delete("/delete/:id", roleMiddleware(['admin']), UserController.deleteUser);
 
 
